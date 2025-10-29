@@ -1,4 +1,4 @@
-# MoneyClock
+# SalaryClock
 
 A minimal, elegant, and configurable “real-time earnings” web app. It displays how much you have earned so far today, with rolling odometer-style digits, day/night themes, and a simple settings modal. Supports cookie/localStorage persistence and a single-file offline build.
 
@@ -141,3 +141,4 @@ Validation:
 
 ### License
 - MIT.
+
