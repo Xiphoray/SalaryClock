@@ -1,0 +1,9 @@
+{
+  "name": "moneyclock",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:standalone": "node scripts/build-standalone.mjs"
+  }
+}

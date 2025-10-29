@@ -1,0 +1,52 @@
+:root{--bg-day:#f7f7f7;--fg-day:#222;--bg-night:#0b0c10;--fg-night:#e6e6e6;--accent:#0d6efd;--wheel-speed:300ms;--mc-digit-fs:clamp(28px,12vw,56px);--mc-digit-width:calc(var(--mc-digit-fs)*1.14);--mc-digit-height:calc(var(--mc-digit-fs)*1.57);--mc-gap:clamp(3px,1.8vw,8px)}
+
+html,body,#moneyclock-app{height:100%}
+body{font-family:"Segoe UI","SegoeUI","Microsoft Yahei UI","Helvetica Neue",Arial,sans-serif;font-weight:700;background:#f7f7f7;color:#222}
+@media (prefers-color-scheme: dark){body{background:var(--bg-night);color:var(--fg-night)}}
+#moneyclock-app{display:flex;align-items:center;justify-content:center;text-align:center;min-height:100vh}
+#moneyclock-app .moneyclock-container{padding-left:clamp(12px,4vw,20px);padding-right:clamp(12px,4vw,20px)}
+
+.moneyclock-container{width:100%;max-width:960px;margin:0 auto;box-sizing:border-box}
+.moneyclock-wage{display:inline-flex;align-items:center;justify-content:center;gap:var(--mc-gap);line-height:1;margin:0 auto;max-width:100%;overflow:hidden;transform-origin:center center;will-change:transform}
+.moneyclock-wage>*{margin-right:var(--mc-gap)}
+.moneyclock-wage>*:last-child{margin-right:0}
+.moneyclock-digit{position:relative;width:var(--mc-digit-width);height:var(--mc-digit-height);overflow:hidden;border-radius:10px;background:rgba(0,0,0,0.04);box-shadow:inset 0 1px 2px rgba(0,0,0,0.08)}
+@media (prefers-color-scheme: dark){.moneyclock-digit{background:rgba(255,255,255,0.06);box-shadow:inset 0 1px 2px rgba(255,255,255,0.06)}}
+.moneyclock-wheel{position:absolute;left:0;top:0;width:100%;will-change:transform;transition:transform var(--wheel-speed) ease-in-out}
+.moneyclock-wheel span{display:flex;align-items:center;justify-content:center;height:var(--mc-digit-height);font-size:var(--mc-digit-fs)}
+.moneyclock-decimal{width:auto;padding:0 calc(var(--mc-digit-fs)*0.14);font-size:var(--mc-digit-fs)}
+.moneyclock-currency{width:auto;padding:0 calc(var(--mc-digit-fs)*0.21);font-size:var(--mc-digit-fs)}
+
+.moneyclock-gear{position:fixed;top:12px;right:12px;opacity:.8}
+.moneyclock-gear svg{width:clamp(20px,6vw,28px);height:clamp(20px,6vw,28px)}
+.moneyclock-gear:hover{opacity:1;color:#0d6efd}
+
+.modal .form-label{font-weight:600}
+.modal .control-label{font-weight:600}
+.modal-body .form-group{margin-bottom:12px}
+.modal-body .form-control{max-width:none;margin:0 auto}
+.modal-body .checkbox{margin:8px 0 12px}
+.moneyclock-time-field{position:relative;display:block;width:240px;margin:0 auto}
+.moneyclock-time-field .moneyclock-time-input{width:100%;box-sizing:border-box;color:inherit}
+/* Native time picker icon color adapt */
+.moneyclock-time-input::-webkit-calendar-picker-indicator{opacity:.85;filter:none}
+@media (prefers-color-scheme: dark){
+  .moneyclock-time-input::-webkit-calendar-picker-indicator{filter:invert(1) brightness(1.2)}
+}
+
+/* Modal theming for day/night */
+.modal-content{background-color:#ffffff;color:var(--fg-day)}
+.modal-header,.modal-footer{border-color:rgba(0,0,0,0.1)}
+.form-control,.form-select{background-color:#ffffff;color:var(--fg-day)}
+
+#moneyclock-settings-modal .modal-title{font-weight:800;font-size:22px}
+@media (prefers-color-scheme: dark){
+  .modal-content{background-color:#14161a;color:var(--fg-night);border-color:rgba(255,255,255,0.15)}
+  .modal-header,.modal-footer{border-color:rgba(255,255,255,0.12)}
+  .form-control,.form-select{background-color:#0f1115;color:var(--fg-night);border-color:rgba(255,255,255,0.18)}
+  .form-control::placeholder{color:rgba(230,230,230,0.55)}
+  .form-check-label{color:var(--fg-night)}
+  .form-check-input{background-color:#0f1115;border-color:rgba(255,255,255,0.25)}
+  .form-check-input:checked{background-color:#0d6efd;border-color:#0d6efd}
+  .moneyclock-time-field .moneyclock-time-icon{opacity:.9}
+}

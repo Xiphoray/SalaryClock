@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MoneyClock</title>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/styles.css" />
+  </head>
+  <body>
+    <div id="moneyclock-app" class="moneyclock-app">
+      <div class="moneyclock-container">
+        <div class="moneyclock-gear" id="moneyclock-btn-settings" role="button" aria-label="设置" title="设置">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19.14,12.94c.04-.31.06-.63.06-.94s-.02-.63-.06-.94l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0 0 0-.6-.22l-2.39.96a7.37,7.37,0,0,0-1.63-.94l-.36-2.54A.5.5 0 0 0,13.9,1H10.1a.5.5,0,0,0-.5.42L9.24,3.96a7.37,7.37,0,0,0-1.63.94l-2.39-.96a.5.5,0,0,0-.6.22L2.7,7.48a.5.5 0 0 0,.12.64L4.85,9.7c-.04.31-.06.63-.06.94s.02.63.06.94L2.82,13.16a.5.5 0 0 0-.12.64l1.92,3.32a.5.5 0 0 0,.6.22l2.39-.96c.5.4,1.04.72,1.63.94l.36,2.54a.5.5 0 0 0,.5.42h3.8a.5.5 0 0 0,.5-.42l.36-2.54c.59-.22,1.13-.54,1.63-.94l2.39.96a.5.5 0 0 0,.6-.22l1.92-3.32a.5.5 0 0 0-.12-.64ZM12,15.5A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z"/>
+          </svg>
+        </div>
+        <div id="moneyclock-wage" class="moneyclock-wage" aria-live="polite" aria-label="今天已获得工资"></div>
+      </div>
+    </div>
+
+    <!-- 设置 Modal -->
+    <div class="modal fade" id="moneyclock-settings-modal" tabindex="-1" aria-labelledby="settingsLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="关闭"><span aria-hidden="true">&times;</span></button>
+            <h5 class="modal-title" id="settingsLabel">设置</h5>
+          </div>
+          <div class="modal-body">
+            <form id="settings-form">
+              <div class="form-group">
+                <label class="control-label">月薪（元）</label>
+                <input type="number" step="0.01" min="0" class="form-control" id="moneyclock-salaryMonthly" />
+              </div>
+              <div class="form-group">
+                <label class="control-label">每月上班天数</label>
+                <input type="number" step="0.01" min="1" class="form-control" id="moneyclock-workDaysPerMonth" />
+              </div>
+              <div class="row">
+                <div class="col-sm-6">
+                  <div class="form-group">
+                    <label class="control-label">上班开始</label>
+                    <div class="moneyclock-time-field">
+                      <input type="time" class="form-control moneyclock-time-input" id="moneyclock-workStart" />
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-6">
+                  <div class="form-group">
+                    <label class="control-label">上班结束</label>
+                    <div class="moneyclock-time-field">
+                      <input type="time" class="form-control moneyclock-time-input" id="moneyclock-workEnd" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-6">
+                  <div class="form-group">
+                    <label class="control-label">午休开始</label>
+                    <div class="moneyclock-time-field">
+                      <input type="time" class="form-control moneyclock-time-input" id="moneyclock-lunchStart" />
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-6">
+                  <div class="form-group">
+                    <label class="control-label">午休结束</label>
+                    <div class="moneyclock-time-field">
+                      <input type="time" class="form-control moneyclock-time-input" id="moneyclock-lunchEnd" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox" id="moneyclock-includeLunch" /> 上班时间包含午休
+                </label>
+              </div>
+              <div class="form-group">
+                <label class="control-label">刷新时间（秒）</label>
+                <input type="number" step="1" min="1" class="form-control" id="moneyclock-refreshSec" />
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" id="save-settings">确认</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@2.1.3/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.2/dist/js/bootstrap.min.js"></script>
+    <script src="assets/app.js"></script>
+  </body>
+</html>
