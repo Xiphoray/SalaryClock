@@ -19,13 +19,13 @@ A minimal, elegant, and configurable “real-time earnings” web app. It displa
 - 右上角齿轮打开“设置”：月薪、上班天数、上班/午休时间、是否包含午休、刷新间隔等；即时校验时间是否合法（超范围即提示）。
 - 首次访问自动写入默认配置，后续从 Cookie（或 localStorage 回退）读取；设置后立即持久化并生效。
 - 自动适配日/夜间模式（`prefers-color-scheme`）；时间选择器图标跟随主题变色。
-- 提供单文件版本 `moneyclock.html`，可离线使用。
+- 提供单文件版本 `SalaryClock.html`，可离线使用。
 
 ### 目录结构
 ```text path=null start=null
-G:/t/code/2025/moneyclock
+SalaryClock
 ├─ index.html                 # CDN 在线版（外链 CSS/JS）
-├─ moneyclock.html            # 单文件离线版（已内联 CSS/JS）
+├─ SalaryClock.html            # 单文件离线版（已内联 CSS/JS）
 ├─ assets/
 │  ├─ styles.css             # 样式（含日/夜主题、设置框样式、滚轮动画等）
 │  └─ app.js                 # 逻辑（计算、动画、设置、校验、持久化）
@@ -36,14 +36,14 @@ G:/t/code/2025/moneyclock
 
 ### 快速开始
 - 预览（需联网）：直接双击 `index.html`。
-- 离线使用：直接打开 `moneyclock.html`。
+- 离线使用：直接打开 `SalaryClock.html`。
 - 生成单文件（可选）：
   1) 安装 Node.js ≥ 18
   2) 项目根目录执行：
      ```bash path=null start=null
      npm run build:standalone
      ```
-     生成 `dist/standalone.html`（功能等同于 `moneyclock.html`）。
+     生成 `dist/standalone.html`（功能等同于 `SalaryClock.html`）。
 
 ### 设置项（默认值）
 - 月薪（元）：`7000`
@@ -86,13 +86,13 @@ G:/t/code/2025/moneyclock
 - Settings modal (gear on top-right): monthly salary, workdays per month, work time, lunch time, include-lunch toggle, refresh interval; immediate time validation on change.
 - First visit writes defaults; subsequent visits load from Cookie (fallback to localStorage). Changes persist instantly.
 - Auto day/night theme (`prefers-color-scheme`); native time-picker icon adapts to theme.
-- Single-file build `moneyclock.html` for offline use.
+- Single-file build `SalaryClock.html` for offline use.
 
 ### Project Structure
 ```text path=null start=null
-G:/t/code/2025/moneyclock
+SalaryClock
 ├─ index.html                 # CDN online version (external CSS/JS)
-├─ moneyclock.html            # Single-file offline version (inlined CSS/JS)
+├─ SalaryClock.html            # Single-file offline version (inlined CSS/JS)
 ├─ assets/
 │  ├─ styles.css             # Styles (themes, modal, wheel/odometer effects)
 │  └─ app.js                 # Logic (calc, animation, settings, validation, persistence)
@@ -103,7 +103,7 @@ G:/t/code/2025/moneyclock
 
 ### Quick Start
 - Preview (online): open `index.html` directly (loads CDN).
-- Offline: open `moneyclock.html`.
+- Offline: open `SalaryClock.html`.
 - Build standalone (optional):
   ```bash path=null start=null
   npm run build:standalone
@@ -141,4 +141,5 @@ Validation:
 
 ### License
 - MIT.
+
 
