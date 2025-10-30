@@ -16,7 +16,9 @@ A minimal, elegant, and configurable “real-time earnings” web app. It displa
 
 ### 功能亮点
 - 实时工资滚动显示（两位小数），精确到毫秒，滚轮仅“向前”滚动，支持跨位进位联动。
-- 右上角齿轮打开“设置”：月薪、上班天数、上班/午休时间、是否包含午休、刷新间隔等；即时校验时间是否合法（超范围即提示）。
+- 右上角齿轮打开“设置”：月薪、上班天数、上班/午休时间、是否包含午休、刷新间隔、入职日期（年月）等；即时校验时间是否合法（超范围即提示）。
+- 顶部三态 TAB 切换：今日/今年/入职以来，带气泡指示器线性移动动画。
+- 下方展示“下班倒计时”，工作时段外显示“以下班”。
 - 首次访问自动写入默认配置，后续从 Cookie（或 localStorage 回退）读取；设置后立即持久化并生效。
 - 自动适配日/夜间模式（`prefers-color-scheme`）；时间选择器图标跟随主题变色。
 - 提供单文件版本 `SalaryClock.html`，可离线使用。
@@ -48,6 +50,7 @@ SalaryClock
 ### 设置项（默认值）
 - 月薪（元）：`7000`
 - 每月上班天数：`21.75`
+- 入职日期（年月）：`2020-07`
 - 上班时间：`08:00 - 17:30`
 - 午休时间：`11:30 - 12:00`
 - 上班时间包含午休：`是`
@@ -83,7 +86,9 @@ SalaryClock
 
 ### Features
 - Real-time rolling digits (2 decimals) with forward-only carry animation across places.
-- Settings modal (gear on top-right): monthly salary, workdays per month, work time, lunch time, include-lunch toggle, refresh interval; immediate time validation on change.
+- Settings modal (gear on top-right): monthly salary, workdays per month, hire date (YYYY-MM), work time, lunch time, include-lunch toggle, refresh interval; immediate time validation on change.
+- Top tabs switch between Today / This Year / Since Hire with a sliding bubble indicator.
+- Bottom section shows a “time to off-duty” countdown; outside work hours shows “已下班/Off duty”.
 - First visit writes defaults; subsequent visits load from Cookie (fallback to localStorage). Changes persist instantly.
 - Auto day/night theme (`prefers-color-scheme`); native time-picker icon adapts to theme.
 - Single-file build `SalaryClock.html` for offline use.
@@ -113,6 +118,7 @@ SalaryClock
 ### Settings (defaults)
 - Monthly salary: `7000`
 - Workdays per month: `21.75`
+- Hire date (YYYY-MM): `2020-07`
 - Work time: `08:00 - 17:30`
 - Lunch time: `11:30 - 12:00`
 - Include lunch: `true`
@@ -128,6 +134,8 @@ Validation:
 - Worked seconds = time within work window (minus overlap with lunch if excluded)
 - Progress = worked_seconds / total_work_seconds
 - Earned today = day_salary × progress (2 decimals, clamped `[0, day_salary]`)
+- Earned this year = monthly_salary × (current_month_index) + (workdays_per_month × day_salary × ((day_of_month-1)/days_in_month)) + Earned today
+- Earned since hire = monthly_salary × floor(months_between(hire_ym, today)) + (workdays_per_month × day_salary × ((day_of_month-1)/days_in_month)) + Earned today
 
 ### Accessibility & Compatibility
 - `aria-live="polite"` on the wage container for assistive tech.
