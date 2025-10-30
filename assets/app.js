@@ -5,10 +5,11 @@
   const DEFAULTS = {
     salaryMonthly: 7000,
     workDaysPerMonth: 21.75,
+    hireMonth: '2020-07',
     workStart: '08:00',
     workEnd: '17:30',
     lunchStart: '11:30',
-    lunchEnd: '12:00',
+    lunchEnd: '13:00',
     includeLunch: true,
     refreshSec: 1
   };
@@ -70,13 +71,24 @@ const SEL = {
   modal: '#moneyclock-settings-modal',
   salaryMonthly: '#moneyclock-salaryMonthly',
   workDaysPerMonth: '#moneyclock-workDaysPerMonth',
+  hireMonth: '#moneyclock-hireMonth',
   workStart: '#moneyclock-workStart',
   workEnd: '#moneyclock-workEnd',
   lunchStart: '#moneyclock-lunchStart',
   lunchEnd: '#moneyclock-lunchEnd',
   includeLunch: '#moneyclock-includeLunch',
   refreshSec: '#moneyclock-refreshSec',
+  tabsWrap: '#moneyclock-tabs',
+  tabToday: '#moneyclock-tab-today',
+  tabYear: '#moneyclock-tab-year',
+  tabSince: '#moneyclock-tab-since',
+  tabIndicator: '#moneyclock-tab-indicator',
+  cdWrap: '#moneyclock-countdown',
+  cdLabel: '#moneyclock-countdown-label',
+  cdTime: '#moneyclock-countdown-time',
 };
+
+let currentMode = 'today'; // 'today' | 'year' | 'since'
 
 function init(){
     buildDisplay('0.00');
@@ -104,6 +116,13 @@ function init(){
     $(SEL.btn).on('click', ()=>{
       fillForm();
       modal.modal('show');
+    });
+
+    // Tabs
+    $(SEL.tabToday+','+SEL.tabYear+','+SEL.tabSince).on('click', function(){
+      const kind = $(this).data('kind');
+      selectMode(kind);
+      renderOnce();
     });
 
     // Disallow manual typing in time inputs, allow picker interactions
@@ -325,20 +344,26 @@ function init(){
   function startTicker(){
     if(ticker) clearInterval(ticker);
     if(!settings){ return; }
+    selectMode(currentMode); // ensure indicator position
     renderOnce();
     const interval = Math.max(1, parseInt(settings.refreshSec,10)||1) * 1000;
     ticker = setInterval(renderOnce, interval);
     // Responsive scaling on resize/orientation changes
     let t;
     $(window).off('.mcfit').on('resize.mcfit orientationchange.mcfit', function(){
-      clearTimeout(t); t = setTimeout(fitWage, 100);
+      clearTimeout(t); t = setTimeout(function(){ fitWage(); positionIndicator(); }, 100);
     });
     fitWage();
+    positionIndicator();
   }
 
   function renderOnce(){
-    const earned = computeEarnedToday();
+    let earned = 0;
+    if(currentMode === 'today') earned = computeEarnedToday();
+    else if(currentMode === 'year') earned = computeEarnedYear();
+    else earned = computeEarnedSinceHire();
     updateDisplay(earned.toFixed(2));
+    updateCountdown();
   }
 
   function computeEarnedToday(){
@@ -372,6 +397,35 @@ function init(){
     return Math.min(daySalary, Math.max(0, earned));
   }
 
+  function computeEarnedYear(){
+    const today = computeEarnedToday();
+    const m = new Date();
+    const monthIndex = m.getMonth(); // 0..11
+    const monthsBefore = monthIndex; // months completed this year
+    const fullMonths = monthsBefore * Number(settings.salaryMonthly);
+    const dim = daysInMonth(m.getFullYear(), monthIndex);
+    const partRatio = Math.max(0, (m.getDate()-1) / dim);
+    const daySalary = Number(settings.salaryMonthly)/Number(settings.workDaysPerMonth);
+    const partialMonth = partRatio * Number(settings.workDaysPerMonth) * daySalary;
+    const total = Math.max(0, fullMonths + partialMonth + today);
+    return total;
+  }
+
+  function computeEarnedSinceHire(){
+    const today = computeEarnedToday();
+    const now = new Date();
+    const hire = parseHireMonth(settings.hireMonth);
+    if(!hire) return today; // fallback
+    let months = monthsBetweenFloor(hire, now);
+    months = Math.max(0, months);
+    const full = months * Number(settings.salaryMonthly);
+    const dim = daysInMonth(now.getFullYear(), now.getMonth());
+    const partRatio = Math.max(0, (now.getDate()-1)/dim);
+    const daySalary = Number(settings.salaryMonthly)/Number(settings.workDaysPerMonth);
+    const partialMonth = partRatio * Number(settings.workDaysPerMonth) * daySalary;
+    return Math.max(0, full + partialMonth + today);
+  }
+
   function toSec(t){
     if(!t || !/^\d{2}:\d{2}$/.test(t)) return 0;
     const [h,m] = t.split(':').map(Number); return h*3600+m*60;
@@ -382,6 +436,22 @@ function init(){
   }
 
   function clamp(x, a, b){ return Math.min(Math.max(x, Math.min(a,b)), Math.max(a,b)); }
+
+  function daysInMonth(y, m /* 0..11 */){ return new Date(y, m+1, 0).getDate(); }
+  function parseHireMonth(str){
+    if(!str || !/^\d{4}-\d{2}$/.test(String(str))) return null;
+    const [Y,M] = String(str).split('-').map(Number);
+    if(!Y || !M) return null;
+    return new Date(Y, M-1, 1);
+  }
+  function monthsBetweenFloor(a /* Date */, b /* Date */){
+    const years = b.getFullYear() - a.getFullYear();
+    const months = b.getMonth() - a.getMonth();
+    let total = years*12 + months;
+    // If b is earlier in month than a's day (we only store year-month, use floor months fully passed)
+    if(total < 0) return total; // future hire
+    return Math.floor(total);
+  }
 
   function loadSettings(){
     const raw = Storage.get();
@@ -403,6 +473,7 @@ function init(){
   function fillForm(){
     $(SEL.salaryMonthly).val(settings.salaryMonthly);
     $(SEL.workDaysPerMonth).val(settings.workDaysPerMonth);
+    $(SEL.hireMonth).val(settings.hireMonth);
     $(SEL.workStart).val(settings.workStart);
     $(SEL.workEnd).val(settings.workEnd);
     $(SEL.lunchStart).val(settings.lunchStart);
@@ -411,9 +482,11 @@ function init(){
     $(SEL.refreshSec).val(settings.refreshSec);
   }
   function readForm(){
+    const hire = String($(SEL.hireMonth).val()||'2020-07');
     const s = {
       salaryMonthly: parseFloat($(SEL.salaryMonthly).val()),
       workDaysPerMonth: parseFloat($(SEL.workDaysPerMonth).val()),
+      hireMonth: (/^\d{4}-\d{2}$/.test(hire) ? hire : '2020-07'),
       workStart: String($(SEL.workStart).val()||'08:00'),
       workEnd: String($(SEL.workEnd).val()||'17:30'),
       lunchStart: String($(SEL.lunchStart).val()||'11:30'),
@@ -474,6 +547,53 @@ function init(){
     const s = n.toFixed(2);
     // Ensure at least one integer digit
     return s.replace(/^\./,'0.');
+  }
+
+  function selectMode(kind){
+    const k = (kind==='year'||kind==='since')? kind : 'today';
+    currentMode = k;
+    // update aria-selected and classes
+    $(SEL.tabToday).toggleClass('active', k==='today').attr('aria-selected', k==='today');
+    $(SEL.tabYear).toggleClass('active', k==='year').attr('aria-selected', k==='year');
+    $(SEL.tabSince).toggleClass('active', k==='since').attr('aria-selected', k==='since');
+    // update wage aria-label
+    const label = k==='today'? '今天已获得工资' : (k==='year'? '今年已获得工资' : '入职以来已获得工资');
+    $(SEL.wage).attr('aria-label', label);
+    positionIndicator();
+  }
+
+  function positionIndicator(){
+    const $act = $('.moneyclock-tab.active').first();
+    const $wrap = $(SEL.tabsWrap).find('.moneyclock-tabs-inner');
+    const $ind = $(SEL.tabIndicator);
+    if(!$act.length || !$wrap.length || !$ind.length) return;
+    const offA = $act.position();
+    const w = $act.outerWidth();
+    const pad = 2; // match CSS top/height inset
+    $ind.css('width', w + 'px');
+    $ind.css('transform', 'translateX(' + (offA.left) + 'px)');
+  }
+
+  function updateCountdown(){
+    if(!settings) return;
+    const now = new Date();
+    const ws = toSec(settings.workStart);
+    const we = toSec(settings.workEnd);
+    const secNow = now.getHours()*3600 + now.getMinutes()*60 + now.getSeconds();
+    if(secNow >= ws && secNow < we){
+      $(SEL.cdLabel).text('距离下班还剩下');
+      const left = Math.max(0, we - secNow);
+      $(SEL.cdTime).text(secToHMS(left));
+    }else{
+      $(SEL.cdLabel).text('以下班');
+      $(SEL.cdTime).text('00:00:00');
+    }
+  }
+
+  function secToHMS(s){
+    s = Math.max(0, Math.floor(s));
+    const h = Math.floor(s/3600), m = Math.floor((s%3600)/60), ss = s%60;
+    return [h,m,ss].map(n=> String(n).padStart(2,'0')).join(':');
   }
 
 })(jQuery);
