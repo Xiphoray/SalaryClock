@@ -10,7 +10,7 @@
     workEnd: '17:30',
     lunchStart: '11:30',
     lunchEnd: '13:00',
-    includeLunch: true,
+    includeLunch: false,
     refreshSec: 1
   };
 
@@ -597,3 +597,4 @@ function init(){
   }
 
 })(jQuery);
+
