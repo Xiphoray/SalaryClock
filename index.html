@@ -14,10 +14,25 @@
       <div class="moneyclock-container">
         <div class="moneyclock-gear" id="moneyclock-btn-settings" role="button" aria-label="设置" title="设置">
           <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M19.14,12.94c.04-.31.06-.63.06-.94s-.02-.63-.06-.94l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0 0 0-.6-.22l-2.39.96a7.37,7.37,0,0,0-1.63-.94l-.36-2.54A.5.5 0 0 0,13.9,1H10.1a.5.5,0,0,0-.5.42L9.24,3.96a7.37,7.37,0,0,0-1.63.94l-2.39-.96a.5.5,0,0,0-.6.22L2.7,7.48a.5.5 0 0 0,.12.64L4.85,9.7c-.04.31-.06.63-.06.94s.02.63.06.94L2.82,13.16a.5.5 0 0 0-.12.64l1.92,3.32a.5.5 0 0 0,.6.22l2.39-.96c.5.4,1.04.72,1.63.94l.36,2.54a.5.5 0 0 0,.5.42h3.8a.5.5 0 0 0,.5-.42l.36-2.54c.59-.22,1.13-.54,1.63-.94l2.39.96a.5.5 0 0 0,.6-.22l1.92-3.32a.5.5 0 0 0-.12-.64ZM12,15.5A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z"/>
+            <path d="M19.14,12.94c.04-.31.06-.63.06-.94s-.02-.63-.06-.94l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0 0 0-.6-.22l-2.39.96a7.37,7.37,0,0,0-1.63-.94l-.36-2.54A.5.5 0 0 0,13.9,1H10.1a.5.5,0,0,0-.5.42L9.24,3.96a7.37,7.37,0,0,0-1.63.94l-2.39-.96a.5.5 0 0 0-.6.22L2.7,7.48a.5.5 0 0 0,.12.64L4.85,9.7c-.04.31-.06.63-.06.94s.02.63.06.94L2.82,13.16a.5.5 0 0 0-.12.64l1.92,3.32a.5.5 0 0 0,.6.22l2.39-.96c.5.4,1.04.72,1.63.94l.36,2.54a.5.5 0 0 0,.5.42h3.8a.5.5 0 0 0,.5-.42l.36-2.54c.59-.22,1.13-.54,1.63-.94l2.39.96a.5.5 0 0 0,.6-.22l1.92-3.32a.5.5 0 0 0-.12-.64ZM12,15.5A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z"/>
           </svg>
         </div>
+
+        <div class="moneyclock-tabs" id="moneyclock-tabs" role="tablist" aria-label="薪资视图切换">
+          <div class="moneyclock-tabs-inner">
+            <button type="button" id="moneyclock-tab-today" class="moneyclock-tab active" data-kind="today" role="tab" aria-selected="true">今日已获薪水</button>
+            <button type="button" id="moneyclock-tab-year" class="moneyclock-tab" data-kind="year" role="tab" aria-selected="false">今年已获薪水</button>
+            <button type="button" id="moneyclock-tab-since" class="moneyclock-tab" data-kind="since" role="tab" aria-selected="false">入职已获薪水</button>
+            <div class="moneyclock-tab-indicator" id="moneyclock-tab-indicator" aria-hidden="true"></div>
+          </div>
+        </div>
+
         <div id="moneyclock-wage" class="moneyclock-wage" aria-live="polite" aria-label="今天已获得工资"></div>
+
+        <div class="moneyclock-countdown" id="moneyclock-countdown" aria-live="polite">
+          <div class="moneyclock-countdown-label" id="moneyclock-countdown-label">距离下班还剩下</div>
+          <div class="moneyclock-countdown-time" id="moneyclock-countdown-time">00:00:00</div>
+        </div>
       </div>
     </div>
 
@@ -38,6 +53,10 @@
               <div class="form-group">
                 <label class="control-label">每月上班天数</label>
                 <input type="number" step="0.01" min="1" class="form-control" id="moneyclock-workDaysPerMonth" />
+              </div>
+              <div class="form-group">
+                <label class="control-label">入职日期（年月）</label>
+                <input type="month" class="form-control" id="moneyclock-hireMonth" />
               </div>
               <div class="row">
                 <div class="col-sm-6">
