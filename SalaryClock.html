@@ -8,11 +8,14 @@
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-:root{--bg-day:#f7f7f7;--fg-day:#222;--bg-night:#0b0c10;--fg-night:#e6e6e6;--accent:#0d6efd;--wheel-speed:300ms;--mc-digit-fs:clamp(28px,12vw,56px);--mc-digit-width:calc(var(--mc-digit-fs)*1.14);--mc-digit-height:calc(var(--mc-digit-fs)*1.57);--mc-gap:clamp(3px,1.8vw,8px)}
+:root{--bg-day:#f7f7f7;--fg-day:#222;--bg-night:#0b0c10;--fg-night:#e6e6e6;--accent:#0d6efd;--wheel-speed:300ms;--mc-digit-fs:clamp(28px,12vw,56px);--mc-digit-inner-scale:0.94;--mc-digit-width:calc(var(--mc-digit-fs)*1.24);--mc-digit-height:calc(var(--mc-digit-fs)*1.57);--mc-gap:clamp(3px,1.8vw,8px)}
 
-html,body,#moneyclock-app{height:100%}
+#moneyclock-app{height:100%;z-index: 199999;position: relative}
 body{font-family:"Segoe UI","SegoeUI","Microsoft Yahei UI","Helvetica Neue",Arial,sans-serif;font-weight:700;background:#f7f7f7;color:#222}
-@media (prefers-color-scheme: dark){body{background:var(--bg-night);color:var(--fg-night)}}
+@media (prefers-color-scheme: dark){body,#moneyclock-app{background:var(--bg-night);color:var(--fg-night)}}
+/* Extra safety scaling for ultra-narrow screens */
+@media (max-width:420px){:root{--mc-digit-inner-scale:0.9}}
+@media (max-width:360px){:root{--mc-digit-inner-scale:0.86}}
 #moneyclock-app{display:flex;align-items:center;justify-content:center;text-align:center;min-height:100vh}
 #moneyclock-app .moneyclock-container{padding-left:clamp(12px,4vw,20px);padding-right:clamp(12px,4vw,20px)}
 
@@ -23,14 +26,15 @@ body{font-family:"Segoe UI","SegoeUI","Microsoft Yahei UI","Helvetica Neue",Aria
 .moneyclock-digit{position:relative;width:var(--mc-digit-width);height:var(--mc-digit-height);overflow:hidden;border-radius:10px;background:rgba(0,0,0,0.04);box-shadow:inset 0 1px 2px rgba(0,0,0,0.08)}
 @media (prefers-color-scheme: dark){.moneyclock-digit{background:rgba(255,255,255,0.06);box-shadow:inset 0 1px 2px rgba(255,255,255,0.06)}}
 .moneyclock-wheel{position:absolute;left:0;top:0;width:100%;will-change:transform;transition:transform var(--wheel-speed) ease-in-out}
-.moneyclock-wheel span{display:flex;align-items:center;justify-content:center;height:var(--mc-digit-height);font-size:var(--mc-digit-fs)}
+.moneyclock-wheel span{display:flex;align-items:center;justify-content:center;height:var(--mc-digit-height);width:100%;padding:0 2px;font-size:calc(var(--mc-digit-fs)*var(--mc-digit-inner-scale));font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
 .moneyclock-decimal{width:auto;padding:0 calc(var(--mc-digit-fs)*0.14);font-size:var(--mc-digit-fs)}
 .moneyclock-currency{width:auto;padding:0 calc(var(--mc-digit-fs)*0.21);font-size:var(--mc-digit-fs)}
 
-.moneyclock-gear{position:fixed;top:12px;right:12px;opacity:.8}
+.moneyclock-gear{position:fixed;top:12px;right:12px;opacity:.8;z-index: 200000}
 .moneyclock-gear svg{width:clamp(20px,6vw,28px);height:clamp(20px,6vw,28px)}
 .moneyclock-gear:hover{opacity:1;color:#0d6efd}
 
+.modal{z-index: 200000}
 .modal .form-label{font-weight:600}
 .modal .control-label{font-weight:600}
 .modal-body .form-group{margin-bottom:12px}
@@ -60,6 +64,23 @@ body{font-family:"Segoe UI","SegoeUI","Microsoft Yahei UI","Helvetica Neue",Aria
   .form-check-input:checked{background-color:#0d6efd;border-color:#0d6efd}
   .moneyclock-time-field .moneyclock-time-icon{opacity:.9}
 }
+
+/* Tabs */
+.moneyclock-tabs{display:flex;justify-content:center;margin:10px 0 16px}
+.moneyclock-tabs-inner{position:relative;display:inline-flex;gap:8px;align-items:center;padding:4px;background:rgba(0,0,0,0.04);border-radius:999px}
+.moneyclock-tab{position:relative;z-index:1;border:0;background:transparent;color:inherit;font-weight:700;padding:6px 14px;border-radius:999px;cursor:pointer}
+.moneyclock-tab[aria-selected="true"],.moneyclock-tab.active{color:#000}
+.moneyclock-tab-indicator{position:absolute;top:2px;height:calc(100% - 4px);left:0;width:0;border-radius:999px;background:rgba(0,0,0,0.12);transition:transform .2s ease,width .2s ease}
+@media (prefers-color-scheme: dark){
+  .moneyclock-tabs-inner{background:rgba(255,255,255,0.06)}
+  .moneyclock-tab[aria-selected="true"],.moneyclock-tab.active{color:#fff}
+  .moneyclock-tab-indicator{background:rgba(255,255,255,0.16)}
+}
+
+/* Countdown */
+.moneyclock-countdown{margin-top:16px}
+.moneyclock-countdown-label{opacity:.8;margin-bottom:4px}
+.moneyclock-countdown-time{font-family:"Segoe UI","SegoeUI",Consolas,monospace;font-weight:700;font-size:clamp(16px,6vw,24px)}
     </style>
   </head>
   <body>
@@ -70,7 +91,22 @@ body{font-family:"Segoe UI","SegoeUI","Microsoft Yahei UI","Helvetica Neue",Aria
             <path d="M19.14,12.94c.04-.31.06-.63.06-.94s-.02-.63-.06-.94l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0 0 0-.6-.22l-2.39.96a7.37,7.37,0,0,0-1.63-.94l-.36-2.54A.5.5 0 0 0,13.9,1H10.1a.5.5 0 0 0-.5.42L9.24,3.96a7.37,7.37,0,0,0-1.63.94l-2.39-.96a.5.5 0 0 0-.6.22L2.7,7.48a.5.5 0 0 0,.12.64L4.85,9.7c-.04.31-.06.63-.06.94s.02.63.06.94L2.82,13.16a.5.5 0 0 0-.12.64l1.92,3.32a.5.5 0 0 0,.6.22l2.39-.96c.5.4,1.04.72,1.63.94l.36,2.54a.5.5 0 0 0,.5.42h3.8a.5.5 0 0 0,.5-.42l.36-2.54c.59-.22,1.13-.54,1.63-.94l2.39.96a.5.5 0 0 0,.6-.22l1.92-3.32a.5.5 0 0 0-.12-.64ZM12,15.5A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z"/>
           </svg>
         </div>
+
+        <div class="moneyclock-tabs" id="moneyclock-tabs" role="tablist" aria-label="薪资视图切换">
+          <div class="moneyclock-tabs-inner">
+            <button type="button" id="moneyclock-tab-today" class="moneyclock-tab active" data-kind="today" role="tab" aria-selected="true">今日已获薪水</button>
+            <button type="button" id="moneyclock-tab-year" class="moneyclock-tab" data-kind="year" role="tab" aria-selected="false">今年已获薪水</button>
+            <button type="button" id="moneyclock-tab-since" class="moneyclock-tab" data-kind="since" role="tab" aria-selected="false">入职已获薪水</button>
+            <div class="moneyclock-tab-indicator" id="moneyclock-tab-indicator" aria-hidden="true"></div>
+          </div>
+        </div>
+
         <div id="moneyclock-wage" class="moneyclock-wage" aria-live="polite" aria-label="今天已获得工资"></div>
+
+        <div class="moneyclock-countdown" id="moneyclock-countdown" aria-live="polite">
+          <div class="moneyclock-countdown-label" id="moneyclock-countdown-label">距离下班还剩下</div>
+          <div class="moneyclock-countdown-time" id="moneyclock-countdown-time">00:00:00</div>
+        </div>
       </div>
     </div>
 
@@ -91,6 +127,10 @@ body{font-family:"Segoe UI","SegoeUI","Microsoft Yahei UI","Helvetica Neue",Aria
               <div class="form-group">
                 <label class="control-label">每月上班天数</label>
                 <input type="number" step="0.01" min="1" class="form-control" id="moneyclock-workDaysPerMonth" />
+              </div>
+              <div class="form-group">
+                <label class="control-label">入职日期（年月）</label>
+                <input type="month" class="form-control" id="moneyclock-hireMonth" />
               </div>
               <div class="row">
                 <div class="col-sm-6">
@@ -156,10 +196,11 @@ body{font-family:"Segoe UI","SegoeUI","Microsoft Yahei UI","Helvetica Neue",Aria
   const DEFAULTS = {
     salaryMonthly: 7000,
     workDaysPerMonth: 21.75,
+    hireMonth: '2020-07',
     workStart: '08:00',
     workEnd: '17:30',
     lunchStart: '11:30',
-    lunchEnd: '12:00',
+    lunchEnd: '13:00',
     includeLunch: true,
     refreshSec: 1
   };
@@ -221,13 +262,23 @@ const SEL = {
   modal: '#moneyclock-settings-modal',
   salaryMonthly: '#moneyclock-salaryMonthly',
   workDaysPerMonth: '#moneyclock-workDaysPerMonth',
+  hireMonth: '#moneyclock-hireMonth',
   workStart: '#moneyclock-workStart',
   workEnd: '#moneyclock-workEnd',
   lunchStart: '#moneyclock-lunchStart',
   lunchEnd: '#moneyclock-lunchEnd',
   includeLunch: '#moneyclock-includeLunch',
   refreshSec: '#moneyclock-refreshSec',
+  tabsWrap: '#moneyclock-tabs',
+  tabToday: '#moneyclock-tab-today',
+  tabYear: '#moneyclock-tab-year',
+  tabSince: '#moneyclock-tab-since',
+  tabIndicator: '#moneyclock-tab-indicator',
+  cdWrap: '#moneyclock-countdown',
+  cdLabel: '#moneyclock-countdown-label',
+  cdTime: '#moneyclock-countdown-time',
 };
+let currentMode = 'today';
 
 function init(){
     buildDisplay('0.00');
@@ -255,6 +306,13 @@ function init(){
     $(SEL.btn).on('click', ()=>{
       fillForm();
       modal.modal('show');
+    });
+
+    // Tabs
+    $(SEL.tabToday+','+SEL.tabYear+','+SEL.tabSince).on('click', function(){
+      const kind = $(this).data('kind');
+      selectMode(kind);
+      renderOnce();
     });
 
     // Disallow manual typing in time inputs, allow picker interactions
@@ -475,20 +533,26 @@ function init(){
   function startTicker(){
     if(ticker) clearInterval(ticker);
     if(!settings){ return; }
+    selectMode(currentMode);
     renderOnce();
     const interval = Math.max(1, parseInt(settings.refreshSec,10)||1) * 1000;
     ticker = setInterval(renderOnce, interval);
     // Responsive scaling on resize/orientation changes
     var t;
     $(window).off('.mcfit').on('resize.mcfit orientationchange.mcfit', function(){
-      clearTimeout(t); t = setTimeout(fitWage, 100);
+      clearTimeout(t); t = setTimeout(function(){ fitWage(); positionIndicator(); }, 100);
     });
     fitWage();
+    positionIndicator();
   }
 
   function renderOnce(){
-    const earned = computeEarnedToday();
+    let earned = 0;
+    if(currentMode === 'today') earned = computeEarnedToday();
+    else if(currentMode === 'year') earned = computeEarnedYear();
+    else earned = computeEarnedSinceHire();
     updateDisplay(earned.toFixed(2));
+    updateCountdown();
   }
 
   function computeEarnedToday(){
@@ -522,6 +586,35 @@ function init(){
     return Math.min(daySalary, Math.max(0, earned));
   }
 
+  function computeEarnedYear(){
+    const today = computeEarnedToday();
+    const m = new Date();
+    const monthIndex = m.getMonth(); // 0..11
+    const monthsBefore = monthIndex; // months completed this year
+    const fullMonths = monthsBefore * Number(settings.salaryMonthly);
+    const dim = daysInMonth(m.getFullYear(), monthIndex);
+    const partRatio = Math.max(0, (m.getDate()-1) / dim);
+    const daySalary = Number(settings.salaryMonthly)/Number(settings.workDaysPerMonth);
+    const partialMonth = partRatio * Number(settings.workDaysPerMonth) * daySalary;
+    const total = Math.max(0, fullMonths + partialMonth + today);
+    return total;
+  }
+
+  function computeEarnedSinceHire(){
+    const today = computeEarnedToday();
+    const now = new Date();
+    const hire = parseHireMonth(settings.hireMonth);
+    if(!hire) return today; // fallback
+    let months = monthsBetweenFloor(hire, now);
+    months = Math.max(0, months);
+    const full = months * Number(settings.salaryMonthly);
+    const dim = daysInMonth(now.getFullYear(), now.getMonth());
+    const partRatio = Math.max(0, (now.getDate()-1)/dim);
+    const daySalary = Number(settings.salaryMonthly)/Number(settings.workDaysPerMonth);
+    const partialMonth = partRatio * Number(settings.workDaysPerMonth) * daySalary;
+    return Math.max(0, full + partialMonth + today);
+  }
+
   function toSec(t){
     if(!t || !/^\d{2}:\d{2}$/.test(t)) return 0;
     const [h,m] = t.split(':').map(Number); return h*3600+m*60;
@@ -532,6 +625,21 @@ function init(){
   }
 
   function clamp(x, a, b){ return Math.min(Math.max(x, Math.min(a,b)), Math.max(a,b)); }
+
+  function daysInMonth(y, m /* 0..11 */){ return new Date(y, m+1, 0).getDate(); }
+  function parseHireMonth(str){
+    if(!str || !/^\d{4}-\d{2}$/.test(String(str))) return null;
+    const [Y,M] = String(str).split('-').map(Number);
+    if(!Y || !M) return null;
+    return new Date(Y, M-1, 1);
+  }
+  function monthsBetweenFloor(a /* Date */, b /* Date */){
+    const years = b.getFullYear() - a.getFullYear();
+    const months = b.getMonth() - a.getMonth();
+    let total = years*12 + months;
+    if(total < 0) return total;
+    return Math.floor(total);
+  }
 
   function loadSettings(){
     const raw = Storage.get();
@@ -553,6 +661,7 @@ function init(){
   function fillForm(){
     $(SEL.salaryMonthly).val(settings.salaryMonthly);
     $(SEL.workDaysPerMonth).val(settings.workDaysPerMonth);
+    $(SEL.hireMonth).val(settings.hireMonth);
     $(SEL.workStart).val(settings.workStart);
     $(SEL.workEnd).val(settings.workEnd);
     $(SEL.lunchStart).val(settings.lunchStart);
@@ -561,9 +670,11 @@ function init(){
     $(SEL.refreshSec).val(settings.refreshSec);
   }
   function readForm(){
+    const hire = String($(SEL.hireMonth).val()||'2020-07');
     const s = {
       salaryMonthly: parseFloat($(SEL.salaryMonthly).val()),
       workDaysPerMonth: parseFloat($(SEL.workDaysPerMonth).val()),
+      hireMonth: (/^\d{4}-\d{2}$/.test(hire) ? hire : '2020-07'),
       workStart: String($(SEL.workStart).val()||'08:00'),
       workEnd: String($(SEL.workEnd).val()||'17:30'),
       lunchStart: String($(SEL.lunchStart).val()||'11:30'),
@@ -624,6 +735,49 @@ function init(){
     const s = n.toFixed(2);
     // Ensure at least one integer digit
     return s.replace(/^\./,'0.');
+  }
+
+  function selectMode(kind){
+    const k = (kind==='year'||kind==='since')? kind : 'today';
+    currentMode = k;
+    $(SEL.tabToday).toggleClass('active', k==='today').attr('aria-selected', k==='today');
+    $(SEL.tabYear).toggleClass('active', k==='year').attr('aria-selected', k==='year');
+    $(SEL.tabSince).toggleClass('active', k==='since').attr('aria-selected', k==='since');
+    const label = k==='today'? '今天已获得工资' : (k==='year'? '今年已获得工资' : '入职以来已获得工资');
+    $(SEL.wage).attr('aria-label', label);
+    positionIndicator();
+  }
+
+  function positionIndicator(){
+    const $act = $('.moneyclock-tab.active').first();
+    const $wrap = $(SEL.tabsWrap).find('.moneyclock-tabs-inner');
+    const $ind = $(SEL.tabIndicator);
+    if(!$act.length || !$wrap.length || !$ind.length) return;
+    const offA = $act.position();
+    const w = $act.outerWidth();
+    $ind.css('width', w + 'px');
+    $ind.css('transform', 'translateX(' + (offA.left) + 'px)');
+  }
+
+  function updateCountdown(){
+    if(!settings) return;
+    const now = new Date();
+    const ws = toSec(settings.workStart);
+    const we = toSec(settings.workEnd);
+    const secNow = now.getHours()*3600 + now.getMinutes()*60 + now.getSeconds();
+    if(secNow >= ws && secNow < we){
+      $(SEL.cdLabel).text('距离下班还剩下');
+      const left = Math.max(0, we - secNow);
+      $(SEL.cdTime).text(secToHMS(left));
+    }else{
+      $(SEL.cdLabel).text('以下班');
+      $(SEL.cdTime).text('00:00:00');
+    }
+  }
+  function secToHMS(s){
+    s = Math.max(0, Math.floor(s));
+    const h = Math.floor(s/3600), m = Math.floor((s%3600)/60), ss = s%60;
+    return [h,m,ss].map(n=> String(n).padStart(2,'0')).join(':');
   }
 
 })(jQuery);
