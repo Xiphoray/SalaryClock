@@ -1,8 +1,12 @@
-:root{--bg-day:#f7f7f7;--fg-day:#222;--bg-night:#0b0c10;--fg-night:#e6e6e6;--accent:#0d6efd;--wheel-speed:300ms;--mc-digit-fs:clamp(28px,12vw,56px);--mc-digit-width:calc(var(--mc-digit-fs)*1.14);--mc-digit-height:calc(var(--mc-digit-fs)*1.57);--mc-gap:clamp(3px,1.8vw,8px)}
+:root{--bg-day:#f7f7f7;--fg-day:#222;--bg-night:#0b0c10;--fg-night:#e6e6e6;--accent:#0d6efd;--wheel-speed:300ms;--mc-digit-fs:clamp(28px,12vw,56px);--mc-digit-inner-scale:0.94;--mc-digit-width:calc(var(--mc-digit-fs)*1.24);--mc-digit-height:calc(var(--mc-digit-fs)*1.57);--mc-gap:clamp(3px,1.8vw,8px)}
 
-html,body,#moneyclock-app{height:100%}
+#moneyclock-app{height:100%;z-index: 199999;position: relative}
 body{font-family:"Segoe UI","SegoeUI","Microsoft Yahei UI","Helvetica Neue",Arial,sans-serif;font-weight:700;background:#f7f7f7;color:#222}
 @media (prefers-color-scheme: dark){body{background:var(--bg-night);color:var(--fg-night)}}
+
+/* Extra safety scaling for ultra-narrow screens */
+@media (max-width:420px){:root{--mc-digit-inner-scale:0.9}}
+@media (max-width:360px){:root{--mc-digit-inner-scale:0.86}}
 #moneyclock-app{display:flex;align-items:center;justify-content:center;text-align:center;min-height:100vh}
 #moneyclock-app .moneyclock-container{padding-left:clamp(12px,4vw,20px);padding-right:clamp(12px,4vw,20px)}
 
@@ -13,14 +17,15 @@ body{font-family:"Segoe UI","SegoeUI","Microsoft Yahei UI","Helvetica Neue",Aria
 .moneyclock-digit{position:relative;width:var(--mc-digit-width);height:var(--mc-digit-height);overflow:hidden;border-radius:10px;background:rgba(0,0,0,0.04);box-shadow:inset 0 1px 2px rgba(0,0,0,0.08)}
 @media (prefers-color-scheme: dark){.moneyclock-digit{background:rgba(255,255,255,0.06);box-shadow:inset 0 1px 2px rgba(255,255,255,0.06)}}
 .moneyclock-wheel{position:absolute;left:0;top:0;width:100%;will-change:transform;transition:transform var(--wheel-speed) ease-in-out}
-.moneyclock-wheel span{display:flex;align-items:center;justify-content:center;height:var(--mc-digit-height);font-size:var(--mc-digit-fs)}
+.moneyclock-wheel span{display:flex;align-items:center;justify-content:center;height:var(--mc-digit-height);width:100%;padding:0 2px;font-size:calc(var(--mc-digit-fs)*var(--mc-digit-inner-scale));font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
 .moneyclock-decimal{width:auto;padding:0 calc(var(--mc-digit-fs)*0.14);font-size:var(--mc-digit-fs)}
 .moneyclock-currency{width:auto;padding:0 calc(var(--mc-digit-fs)*0.21);font-size:var(--mc-digit-fs)}
 
-.moneyclock-gear{position:fixed;top:12px;right:12px;opacity:.8}
+.moneyclock-gear{position:fixed;top:12px;right:12px;opacity:.8;z-index: 200000}
 .moneyclock-gear svg{width:clamp(20px,6vw,28px);height:clamp(20px,6vw,28px)}
 .moneyclock-gear:hover{opacity:1;color:#0d6efd}
 
+.modal{z-index: 200000}
 .modal .form-label{font-weight:600}
 .modal .control-label{font-weight:600}
 .modal-body .form-group{margin-bottom:12px}
@@ -30,9 +35,25 @@ body{font-family:"Segoe UI","SegoeUI","Microsoft Yahei UI","Helvetica Neue",Aria
 .moneyclock-time-field .moneyclock-time-input{width:100%;box-sizing:border-box;color:inherit}
 /* Native time picker icon color adapt */
 .moneyclock-time-input::-webkit-calendar-picker-indicator{opacity:.85;filter:none}
-@media (prefers-color-scheme: dark){
-  .moneyclock-time-input::-webkit-calendar-picker-indicator{filter:invert(1) brightness(1.2)}
+@media (prefers-color-scheme: dark){.moneyclock-time-input::-webkit-calendar-picker-indicator{filter:invert(1) brightness(1.2)}
 }
+
+/* Tabs */
+.moneyclock-tabs{display:flex;justify-content:center;margin:10px 0 16px}
+.moneyclock-tabs-inner{position:relative;display:inline-flex;gap:8px;align-items:center;padding:4px;background:rgba(0,0,0,0.04);border-radius:999px}
+.moneyclock-tab{position:relative;z-index:1;border:0;background:transparent;color:inherit;font-weight:700;padding:6px 14px;border-radius:999px;cursor:pointer}
+.moneyclock-tab[aria-selected="true"],.moneyclock-tab.active{color:#000}
+.moneyclock-tab-indicator{position:absolute;top:2px;height:calc(100% - 4px);left:0;width:0;border-radius:999px;background:rgba(0,0,0,0.12);transition:transform .2s ease,width .2s ease}
+@media (prefers-color-scheme: dark){
+  .moneyclock-tabs-inner{background:rgba(255,255,255,0.06)}
+  .moneyclock-tab[aria-selected="true"],.moneyclock-tab.active{color:#fff}
+  .moneyclock-tab-indicator{background:rgba(255,255,255,0.16)}
+}
+
+/* Countdown */
+.moneyclock-countdown{margin-top:16px}
+.moneyclock-countdown-label{opacity:.8;margin-bottom:4px}
+.moneyclock-countdown-time{font-family:"Segoe UI","SegoeUI",Consolas,monospace;font-weight:700;font-size:clamp(16px,6vw,24px)}
 
 /* Modal theming for day/night */
 .modal-content{background-color:#ffffff;color:var(--fg-day)}
@@ -49,4 +70,5 @@ body{font-family:"Segoe UI","SegoeUI","Microsoft Yahei UI","Helvetica Neue",Aria
   .form-check-input{background-color:#0f1115;border-color:rgba(255,255,255,0.25)}
   .form-check-input:checked{background-color:#0d6efd;border-color:#0d6efd}
   .moneyclock-time-field .moneyclock-time-icon{opacity:.9}
+}
 }
